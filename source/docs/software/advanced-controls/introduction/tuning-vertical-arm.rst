@@ -34,7 +34,7 @@ The tutorials below will demonstrate the behavior of the system under pure feedf
 Pure Feedforward Control
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Interact with the simulation below to examine how the turret system responds when controlled only by a feedforward controller.
+Interact with the simulation below to examine how the arm system responds when controlled only by a feedforward controller.
 
 .. note:: To change the arm setpoint, click on the desired angle along the perimeter of the turret.  To command smooth motion, click and drag the setpoint indicator.
 
