@@ -54,7 +54,7 @@ Declaring requirements is done by overriding the ``getRequirements()`` method in
 
   .. code-block:: python
 
-    // intake is a required subsystem of this command
+    # intake is a required subsystem of this command
     commands2.cmd.run(intake.activate, intake)
 
 As a rule, command compositions require all subsystems their components require.
