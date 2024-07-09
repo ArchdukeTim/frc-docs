@@ -1,12 +1,12 @@
 Commands
 ========
 
-**Commands** represent actions the robot can take. Commands run when scheduled, until they are interrupted or their end condition is met.  Commands are represented in the command-based library by the ``Command`` class (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html>`__) or the ``Command`` class in ``commands2`` library (:external:py:class:`Python <commands2.Command>`).
+**Commands** represent actions the robot can take. Commands run when scheduled, and continue running until they are interrupted by other commands or their end condition is met.  Commands are represented in the command-based library by the ``Command`` class (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html>`__) or the ``Command`` class in ``commands2`` library (:external:py:class:`Python <commands2.Command>`).
 
 The Structure of a Command
 --------------------------
 
-Commands specify what the command will do in each of its possible states. This is done by overriding the ``initialize()``, ``execute()``, and ``end()`` methods. Additionally, a command must be able to tell the scheduler when (if ever) it has finished execution - this is done by overriding the ``isFinished()`` method. All of these methods are defaulted to reduce clutter in user code: ``initialize()``, ``execute()``, and ``end()`` are defaulted to simply do nothing, while ``isFinished()`` is defaulted to return false (resulting in a command that never finishes naturally, and will run until interrupted).
+A command has three states: initialization, execution, and termination. Defining a commands behavior in each of these states is done through overriding the ``initialize()``, ``execute()``, and ``end()`` methods, respectively. Additionally, a command must be able to indicate to the scheduler when (if ever) it has finished execution - this is done by overriding the ``isFinished()`` method. All of these methods are defaulted to reduce clutter in user code: ``initialize()``, ``execute()``, and ``end()`` are defaulted to simply do nothing, while ``isFinished()`` is defaulted to return false (resulting in a command that never finishes naturally, and will run until interrupted).
 
 Initialization
 ^^^^^^^^^^^^^^
@@ -18,15 +18,15 @@ Execution
 
 The ``execute()`` method (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html#execute()>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html#a7d7ea1271f7dcc65c0ba3221d179b510>`__, :external:py:meth:`Python <commands2.Command.execute>`) is called repeatedly while the command is scheduled; this is when the scheduler’s ``run()`` method is called (this is generally done in the main robot periodic method, which runs every 20ms by default). The execute block should be used for any task that needs to be done continually while the command is scheduled, such as updating motor outputs to match joystick inputs, or using the output of a control loop.
 
-Ending
-^^^^^^
+Termination
+^^^^^^^^^^^
 
 The ``end(bool interrupted)`` method (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html#end(boolean)>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html#a134eda3756f00c667bb5415b23ee920c>`__, :external:py:meth:`Python <commands2.Command.end>`) is called once when the command ends, whether it finishes normally (i.e. ``isFinished()`` returned true) or it was interrupted (either by another command or by being explicitly canceled). The method argument specifies the manner in which the command ended; users can use this to differentiate the behavior of their command end accordingly. The end block should be used to "wrap up" command state in a neat way, such as setting motors back to zero or reverting a solenoid actuator to a "default" state. Any state or resources initialized in ``initialize()`` should be closed in ``end()``.
 
 Specifying end conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``isFinished()`` method (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html#end(boolean)>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html#af5e8c12152d195a4f3c06789366aac88>`__, :external:py:meth:`Python <commands2.Command.isFinished>`) is called repeatedly while the command is scheduled, whenever the scheduler’s ``run()`` method is called. As soon as it returns true, the command’s ``end()`` method is called and it ends. The ``isFinished()`` method is called after the ``execute()`` method, so the command will execute once on the same iteration that it ends.
+The ``isFinished()`` method (`Java <https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/Command.html#end(boolean)>`__, `C++ <https://github.wpilib.org/allwpilib/docs/release/cpp/classfrc2_1_1_command.html#af5e8c12152d195a4f3c06789366aac88>`__, :external:py:meth:`Python <commands2.Command.isFinished>`) is called repeatedly while the command is scheduled, whenever the scheduler’s ``run()`` method is called. As soon as this method returns true, the command’s ``end()`` method is called and the command ends. The ``isFinished()`` method is called after the ``execute()`` method, so the command will execute once on the same iteration that it ends.
 
 Command Properties
 ------------------
@@ -44,14 +44,17 @@ Declaring requirements is done by overriding the ``getRequirements()`` method in
 
   .. code-block:: java
 
+    // intake is a required subsystem of this command
     Commands.run(intake::activate, intake);
 
   .. code-block:: c++
 
+    // intake is a required subsystem of this command
     frc2::cmd::Run([&intake] { intake.Activate(); }, {&intake});
 
   .. code-block:: python
 
+    // intake is a required subsystem of this command
     commands2.cmd.run(intake.activate, intake)
 
 As a rule, command compositions require all subsystems their components require.
